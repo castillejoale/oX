@@ -13,9 +13,22 @@ class BoardViewController: UIViewController {
     @IBOutlet var boardView: UIView!
     
     var gameObject = OXGame()
+    var lastRotation: Float!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // allow for user interaction
+        view.userInteractionEnabled = true
+        
+        //Rotation
+        
+        // create an instance of UIRotationGestureRecognizer
+        let rotation: UIRotationGestureRecognizer = UIRotationGestureRecognizer(target: self, action:#selector(BoardViewController.handleRotation(_:)))
+        // add tap as a gestureRecognizer to tapView
+        self.boardView.addGestureRecognizer(rotation)
+        //Initialize lastRotation
+        self.lastRotation = 0.0
+
     }
     
     override func didReceiveMemoryWarning() {
@@ -36,6 +49,10 @@ class BoardViewController: UIViewController {
             sender.setTitle("\(moveToPrint)", forState: UIControlState.Normal)
         }
         
+        if let moveToPrint = move   {
+            sender.setTitle("\(moveToPrint)", forState: UIControlState.Normal)
+        }
+        
         let state = gameObject.state()
         
         if (state == OXGameState.complete_someone_won) {
@@ -43,23 +60,56 @@ class BoardViewController: UIViewController {
             let message = "\(winner) won the game"
             print(message)
             self.restartGame()
-//            let alert = UIAlertController(title: "Game Over", message: message, preferredStyle: UIAlertControllerStyle.Alert)
-//            self.presentViewController(alert, animated: true, completion: nil)
-//            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: {(action) in
-//                self.restartGame()
-//            }))
+            //            let alert = UIAlertController(title: "Game Over", message: message, preferredStyle: UIAlertControllerStyle.Alert)
+            //            self.presentViewController(alert, animated: true, completion: nil)
+            //            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: {(action) in
+            //                self.restartGame()
+            //            }))
         } else if (state == OXGameState.complete_no_one_won) {
             let message = "Game tied!"
             print(message)
             self.restartGame()
-//            let alert = UIAlertController(title: "Game Over", message: message, preferredStyle: UIAlertControllerStyle.Alert)
-//            self.presentViewController(alert, animated: true, completion: nil)
-//            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: {(action) in
-//                self.restartGame()
-//            }))
+            //            let alert = UIAlertController(title: "Game Over", message: message, preferredStyle: UIAlertControllerStyle.Alert)
+            //            self.presentViewController(alert, animated: true, completion: nil)
+            //            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: {(action) in
+            //                self.restartGame()
+            //            }))
         }
         
     }
+    
+    func handleRotation(sender: UIRotationGestureRecognizer? = nil) {
+        
+        
+        //Update transformation
+        self.boardView.transform = CGAffineTransformMakeRotation(sender!.rotation + CGFloat(self.lastRotation));
+        
+        //Rotation ends
+        if (sender!.state == UIGestureRecognizerState.Ended)   {
+            
+            print("game rotation")
+            
+            UIView.animateWithDuration(NSTimeInterval(1), animations: {
+                
+                var rotation = CGFloat(self.lastRotation)
+                
+                if( abs(sender!.rotation) > CGFloat(M_PI)/6.0){
+                    
+                    rotation += CGFloat(M_PI)
+                    self.lastRotation = self.lastRotation! + Float(M_PI)
+                    
+                    
+                }
+                
+                self.boardView.transform = CGAffineTransformMakeRotation(rotation)
+                
+            })
+            
+        }
+        
+    }
+
+    
     @IBAction func newGameWasTapped(sender: AnyObject) {
         
         print("newGameWasTapped")
@@ -79,5 +129,5 @@ class BoardViewController: UIViewController {
         }
         
     }
-
+    
 }

@@ -13,6 +13,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     var navigationController: UINavigationController?
+    var authorisationNavController: UINavigationController?
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
@@ -21,13 +22,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.navigationController = UINavigationController(rootViewController: boardViewController)
         self.navigationController?.navigationBarHidden = true
         
+        let landingViewController = LandingViewController(nibName: "LandingViewController", bundle: nil)
+        self.authorisationNavController = UINavigationController(rootViewController: landingViewController)
+        
         self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
+        
+        //Set initial navController
         self.window?.rootViewController = self.navigationController
         self.window?.makeKeyAndVisible()
         
-        
+        EasterEggController.sharedInstance.initiate(self.window!)
         
         return true
+    }
+    
+    func navigateToLoggedInNavigationController() {
+        self.window?.rootViewController = self.navigationController
     }
 
     func applicationWillResignActive(application: UIApplication) {
@@ -53,5 +63,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 
+    //MARK: Easter Egg Function
+    func navigateToEasterEggScreen  (animated:Bool) {
+     
+        let snapShot = self.window?.snapshotViewAfterScreenUpdates(true)
+        let easterEgg = EasterEggViewController(nibName: "EasterEggViewController",bundle: nil)
+        easterEgg.view.addSubview(snapShot!)
+        
+        let easterEggNavigationController = UINavigationController(rootViewController: easterEgg)
+        easterEggNavigationController.navigationBarHidden = true
+        
+        UIView.transitionWithView(self.window!, duration: NSTimeInterval(1), options: UIViewAnimationOptions.CurveLinear, animations: { self.window?.rootViewController = easterEggNavigationController}, completion: nil)
+        UIView.animateWithDuration(NSTimeInterval(1), animations: {snapShot?.layer.opacity = 0; snapShot?.layer.transform =  CATransform3DMakeScale(1.5, 1.5, 1.5)})
+    }
+    
+    func returnToMainNavigationController() {
+        
+        let snapShot = self.window?.snapshotViewAfterScreenUpdates(true)
+        
+        self.navigationController?.visibleViewController!.view.addSubview(snapShot!)
+        
+        UIView.transitionWithView(self.window!, duration: NSTimeInterval(2), options: UIViewAnimationOptions.CurveLinear, animations: {
+                self.window?.rootViewController = self.navigationController
+            }, completion: nil)
+        UIView.animateWithDuration(NSTimeInterval(2), animations: {snapShot?.layer.opacity = 0; snapShot?.layer.transform =  CATransform3DMakeScale(1.5, 1.5, 1.5)})
+        
+    }
 }
 
