@@ -9,7 +9,7 @@
 import UIKit
 
 class LoginViewController: UIViewController {
-    @IBOutlet weak var usernameField: UITextField!
+    @IBOutlet weak var emailField: EmailValidatedTextField!
     @IBOutlet weak var passwordField: UITextField!
     
     override func viewDidLoad() {
@@ -25,10 +25,14 @@ class LoginViewController: UIViewController {
     
     
     @IBAction func loginButtonTapped(sender: UIButton) {
-        let username = usernameField.text!
+        let email = emailField.text!
         let password = passwordField.text!
         
-        let loginResult = UserController.sharedInstance.loginUser(username, suppliedPassword: password)
+        if !emailField.validate() {
+            return
+        }
+        
+        let loginResult = UserController.sharedInstance.loginUser(email, suppliedPassword: password)
         
         let (failure_message, user) = loginResult
         

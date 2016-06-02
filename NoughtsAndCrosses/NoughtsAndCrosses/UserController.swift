@@ -22,7 +22,7 @@ class UserController {
     }
     
     struct User {
-        var username: String
+        var email: String
         var password: String
     }
     
@@ -30,25 +30,26 @@ class UserController {
     
     var logged_in_user: User?
     
-    func registerUser(newUsername: String, newPassword: String) -> (failureMessage: String?, user: User?) {
+    func registerUser(newEmail: String, newPassword: String) -> (failureMessage: String?, user: User?) {
         for user in users {
-            if user.username == newUsername {
+            if user.email == newEmail {
                 return ("Username taken", nil)
             }
         }
-        let user = User(username: newUsername, password: newPassword)
+        let user = User(email: newEmail, password: newPassword)
         users.append(user)
         logged_in_user = user
-        print("User with username: \(newUsername) has been registered by the UserManager.")
+        print("User with email: \(newEmail) has been registered by the UserManager.")
         return (nil, user)
     }
     
     func loginUser(suppliedUsername: String, suppliedPassword: String) -> (failureMessage: String?, user: User?){
+        
         for user in users {
-            if user.username == suppliedUsername {
+            if user.email == suppliedUsername {
                 if user.password == suppliedPassword {
                     logged_in_user = user
-                    print("User with username: \(suppliedUsername) has been logged in by the UserManager.")
+                    print("User with email: \(suppliedUsername) has been logged in by the UserManager.")
                     return (nil, user)
                 } else {
                     return ("Password incorrect", nil)
@@ -56,6 +57,15 @@ class UserController {
             }
         }
         
-        return ("No user with that username", nil)
+        return ("No user with that email", nil)
     }
+    
+    func setCurrentUserId(email:String, password:String) {
+        
+        let user = User(email: email, password: password)
+        users.append(user)
+        logged_in_user = user
+        
+    }
+    
 }

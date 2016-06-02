@@ -28,6 +28,17 @@ class BoardViewController: UIViewController {
         self.boardView.addGestureRecognizer(rotation)
         //Initialize lastRotation
         self.lastRotation = 0.0
+        
+        
+        //Make sure we have the user available
+        let user = (UserController.sharedInstance.logged_in_user)!
+        
+        let emailLoggedIn: String = user.email
+        let passwordLoggedIn: String = user.password
+        
+        print(emailLoggedIn)
+        print(passwordLoggedIn)
+        
 
     }
     
@@ -127,6 +138,18 @@ class BoardViewController: UIViewController {
                 button.setTitle("", forState: UIControlState.Normal)
             }
         }
+        
+    }
+    
+    @IBAction func logoutWasPressed(sender: AnyObject) {
+        
+        print("pressing logout")
+        
+        NSUserDefaults.standardUserDefaults().setValue(nil, forKey: "userIdLoggedIn")
+        NSUserDefaults.standardUserDefaults().setValue(nil, forKey: "passwordLoggedIn")
+        
+        let appDelegate: AppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        appDelegate.navigateToLoggedOutNavigationController()
         
     }
     

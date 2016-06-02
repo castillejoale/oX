@@ -10,7 +10,7 @@ import UIKit
 
 class RegistrationViewController: UIViewController {
 
-    @IBOutlet weak var usernameField: UITextField!
+    @IBOutlet weak var emailField: EmailValidatedTextField!
     @IBOutlet weak var passwordField: UITextField!
     
     override func viewDidLoad() {
@@ -26,20 +26,29 @@ class RegistrationViewController: UIViewController {
     
     @IBAction func registerButtontapped(sender: UIButton) {
         
-        let username = usernameField.text!
+        let email = emailField.text!
         let password = passwordField.text!
         
-        let (failureMessage, user) = UserController.sharedInstance.registerUser(username, newPassword: password)
+        if !emailField.validate() {
+            return
+        }
+        
+        let (failureMessage, user) = UserController.sharedInstance.registerUser(email, newPassword: password)
         
         if let _ = user {
             print ("User registered")
+            
+            NSUserDefaults.standardUserDefaults().setValue(email, forKey: "userIdLoggedIn")
+            NSUserDefaults.standardUserDefaults().setValue(password, forKey: "passwordLoggedIn")
+            
             let appDelegate: AppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-            //appDelegate.navigateToLoggedInNavigationController()
+            appDelegate.navigateToLoggedInNavigationController()
         } else {
             if let message = failureMessage {
                 print ("Failed to register user: \(message)")
             }
         }
+        
     }
 
     /*
